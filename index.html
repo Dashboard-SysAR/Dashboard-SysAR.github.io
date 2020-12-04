@@ -31,11 +31,11 @@
 			<br>
 			<div class="row">
 				<div class="col-sm">
-					<h4><i class="fas fa-water"></i> Humedad</h4>
+					<h4><i class="fas fa-water"></i> Humedad actual</h4>
 					<p id="humedad">0.00%</p>
 				</div>
 				<div class="col-sm">
-					<h4><i class="fas fa-thermometer-quarter"></i> Temperatura</h4>
+					<h4><i class="fas fa-thermometer-quarter"></i> Temperatura actual</h4>
 					<p id="temperatura">0.00°C</p>
 				</div>
 				<div class="col-sm">
@@ -45,6 +45,14 @@
 			</div>
 			<br>
 			<div class="row">
+				<div class="col-sm">
+					<h4><i class="far fa-chart-bar"></i> Gráfica humedad</h4>
+					<canvas id="grafica"></canvas>
+				</div>
+				<div class="col-sm">
+					<h4><i class="far fa-chart-bar"></i> Gráfica temperatura</h4>
+					<canvas id="grafica-temp"></canvas>
+				</div>
 				<div class="col-sm">
 					<h4><i class="fas fa-microphone"></i> Control por voz</h4>
 					<br>
@@ -56,12 +64,6 @@
 						<button id="btnDetenerGrabacion" class="btn btn-raised btn-danger">Detener</button>
 					</center></div>
 					<div id="res"></div>
-				</div>
-				<div class="col-sm">
-
-				</div>
-				<div class="col-sm">
-					
 				</div>
 			</div>
 		</div>
@@ -79,17 +81,82 @@
         <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"></script>
 		<script src="https://kit.fontawesome.com/980d624e3a.js" crossorigin="anonymous"></script>
 		<script src="./audio.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 		<script>
             $(document).ready(function () {
                 $('body').bootstrapMaterialDesign();
 			});
+
+			var ctx = document.getElementById('grafica').getContext('2d');
+			var ctx2 = document.getElementById('grafica-temp').getContext('2d');
+			function consultarGrafica(){
+				fetch("https://christianecg.com/dec2020.php?grafica=1")
+				.then((response) =>
+					response.json()
+				).then((response)=>{
+					console.log(response);
+					var chart = new Chart(ctx, 
+						{
+						type: 'line',
+							data: {
+								labels: [1,2,3,4,5],
+								datasets: [
+									{
+										label: 'Humedad',
+										backgroundColor: '#45B6FB',
+										borderColor: '#1C109B',
+										data: [response.hum4,response.hum3,response.hum2,response.hum1,response.hum0]
+									}
+								]
+							},
+							options: {
+								scales: {
+									yAxes: [{
+										ticks: {
+											suggestedMin: 20,
+											suggestedMax: 70
+										}
+									}]
+								}
+							}	
+						}
+					)
+
+					var chart2 = new Chart(ctx2, 
+						{
+						type: 'line',
+							data: {
+								labels: [1,2,3,4,5],
+								datasets: [
+									{
+										label: 'Temperatura',
+										backgroundColor: '#FBA045',
+										borderColor: '#B61D1D',
+										data: [response.temp4,response.temp3,response.temp2,response.temp1,response.temp0]
+									}
+								]
+							},
+							options: {
+								scales: {
+									yAxes: [{
+										ticks: {
+											suggestedMin: 10,
+											suggestedMax: 35
+										}
+									}]
+								}
+							}
+						}
+					)
+				}
+				)}
 
 			function consultar(){
 				fetch("https://christianecg.com/dec2020.php")
 				.then((response) =>
 					response.json()
 				).then((response)=>{
-					console.log(response);
+					
 					let temperatura = document.getElementById("temperatura");
 					let humedad = document.getElementById("humedad");
 					let movimiento = document.getElementById("movimiento");
@@ -98,6 +165,7 @@
 					humedad.innerHTML = response.hum+"%";
 					movimiento.innerHTML = response.mov == "0" ? "Al parecer, no hay nadie en el jardín" : "Hay movimiento en tu jardín";
 				})
+				consultarGrafica();
 			}
 
 			setInterval('consultar()',5000);
