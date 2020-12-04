@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+		<meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"/>
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" />
+        <title>SysAR Dashboard</title>
+    </head>
+    <body style="background-color: #090909; color: #e0e0e0;">
+        <div class="container-fluid" style="visibility: hidden;">
+			<br>
+			<br>            
+		</div>
+		
+		<div class="container">
+			<table>
+				<tr>
+					<td>
+						<img src="./icon.gif" alt="Net JHOM's" style="border-radius: 50%; width: 5rem;">&nbsp;&nbsp;&nbsp;
+					</td>
+					<td style="display: table-cell; vertical-align: middle;">
+						<h2>SysAR Dashboard</h2>
+						<p style="font-size: 0.9rem; line-height: 0;">Designed and developed by Net JHOM's</p>
+					</td>
+				</tr>
+				<tr>
+					
+				</tr>
+			</table>
+			<br>
+			<div class="row">
+				<div class="col-sm">
+					<h4><i class="fas fa-water"></i> Humedad</h4>
+					<p id="humedad">0.00%</p>
+				</div>
+				<div class="col-sm">
+					<h4><i class="fas fa-thermometer-quarter"></i> Temperatura</h4>
+					<p id="temperatura">0.00°C</p>
+				</div>
+				<div class="col-sm">
+					<h4><i class="fas fa-people-carry"></i> Movimiento</h4>
+					<p id="movimiento">Al parecer, no hay nadie en el jardín</p>
+				</div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-sm">
+					<h4><i class="fas fa-microphone"></i> Control por voz</h4>
+					<br>
+					<div><center>
+						<select name="listaDeDispositivos" id="listaDeDispositivos" class="custom-select" style="width: 80%;">
+						</select>
+						<p id="duracion"></p>
+						<button id="btnComenzarGrabacion" class="btn btn-raised btn-success">Comenzar</button>
+						<button id="btnDetenerGrabacion" class="btn btn-raised btn-danger">Detener</button>
+					</center></div>
+					<div id="res"></div>
+				</div>
+				<div class="col-sm">
+
+				</div>
+				<div class="col-sm">
+					
+				</div>
+			</div>
+		</div>
+
+		<br><br><br><br>
+
+		<footer class="page-footer font-small" style="background-color: Teal;">
+			<div class="footer-copyright text-center py-3">© 2020 Copyright:
+				<a href="http://netjhoms.ml" style="color: #fff;"> Net JHOM's</a>
+			</div>
+		</footer>
+
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"></script>
+        <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js"></script>
+		<script src="https://kit.fontawesome.com/980d624e3a.js" crossorigin="anonymous"></script>
+		<script src="./audio.js"></script>
+		<script>
+            $(document).ready(function () {
+                $('body').bootstrapMaterialDesign();
+			});
+
+			function consultar(){
+				fetch("http://api.netjhoms.ml/dec2020.php")
+				.then((response) =>
+					response.json()
+				).then((response)=>{
+					console.log(response);
+					let temperatura = document.getElementById("temperatura");
+					let humedad = document.getElementById("humedad");
+					let movimiento = document.getElementById("movimiento");
+
+					temperatura.innerHTML = response.temp+"°C";
+					humedad.innerHTML = response.hum+"%";
+					movimiento.innerHTML = response.mov == "0" ? "Al parecer, no hay nadie en el jardín" : "Hay movimiento en tu jardín";
+				})
+			}
+
+			setInterval('consultar()',5000);
+        </script>
+    </body>
+</html>
